@@ -6,7 +6,7 @@ This action looks at git tags in a repository that begin with `v`, and are of fo
 
 ### `gh_token`
 
-The GitHub token used to authenticate with GitHub to push changes to a PR.
+The GitHub token used to authenticate with GitHub.
 
 **Required**
 
