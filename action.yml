@@ -1,0 +1,13 @@
+name: 'Determine Next Version'
+description: 'Parses Git Tags that start with v and determines the next version'
+author: 'Gopal Sharma <gps@surya-soft.com>'
+inputs:
+  GH_TOKEN:
+    description: GitHub Token used to interact with GitHub API
+    required: True
+outputs:
+  NEXT_BUILD_VERSION:
+    description: Next build number to use
+runs:
+  using: node12
+  main: main.js
