@@ -23,7 +23,7 @@ async function run() {
     .filter((el) => el.match(versionTagRegex));
 
   if (tags.length < 1) {
-    setBuildVersion('v0.0.1');
+    setBuildVersion('0.0.1');
     return;
   }
 
