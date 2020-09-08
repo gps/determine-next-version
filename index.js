@@ -6,6 +6,27 @@ function setBuildVersion(buildVersion) {
   core.setOutput("NEXT_BUILD_VERSION", buildVersion);
 }
 
+async function listAllTags(octokit, owner, repo) {
+  var page = 1;
+  var tags = [];
+  while (true) {
+    const response = await octokit.repos.listTags({
+      owner,
+      repo,
+      per_page: 100,
+      page: page,
+    });
+    const newTags = response["data"].map((obj) => obj["name"]);
+
+    if (!newTags.length) {
+      break;
+    }
+    tags.push(...newTags);
+    page++;
+  }
+  return tags;
+}
+
 async function run() {
   const token = core.getInput("GH_TOKEN");
   var tagPrefix = core.getInput("TAG_PREFIX");
@@ -16,18 +37,13 @@ async function run() {
   const owner = env.GITHUB_REPOSITORY.split("/")[0];
   const repo = env.GITHUB_REPOSITORY.split("/")[1];
 
-  const response = await octokit.repos.listTags({
-    owner,
-    repo,
-  });
   const versionTagRegex = new RegExp(`^${tagPrefix}(\\d+)\\.(\\d+)\\.(\\d+)$`);
 
-  const tags = response["data"]
-    .map((obj) => obj["name"])
-    .filter((el) => el.match(versionTagRegex));
+  const allTags = await listAllTags(octokit, owner, repo);
+  const tags = allTags.filter((el) => el.match(versionTagRegex));
 
   if (tags.length < 1) {
-    setBuildVersion('0.0.1');
+    setBuildVersion("0.0.1");
     return;
   }
 
