@@ -14,4 +14,4 @@ outputs:
     description: Next build number to use
 runs:
   using: node12
-  main: index.js
+  main: 'dist/index.js'
