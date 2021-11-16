@@ -1,6 +1,6 @@
 # Determine Next Version GitHub Action
 
-This action looks at git tags in a repository that begin with `v`, and are of format `x.y.z`, where `x`, `y`, and `z` are integers that represent the major, minor, and patch versions respectively. It then sets an output with `x.y.z+1`.
+This action looks at git tags in a repository that begin with `v`, and are of format `x.y.z`, where `x`, `y`, and `z` are integers that represent the major, minor, and patch versions respectively. It then sets an output with `x.y.z(1)`.
 
 ## Inputs
 
