@@ -1,11 +1,23 @@
-name: Build Package to use ncc
+name: Build
 on: [pull_request]
+
+permissions:
+  contents: write
+
 jobs:
   build-package:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Build node js module
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version-file: .tool-versions
+          cache: npm
+      - run: npm ci
+      - run: npm audit
+      - name: Generate Distribution
         uses: gps/ncc-gha@master
         with:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}

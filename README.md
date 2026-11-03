@@ -28,9 +28,12 @@ Next build version to use.
 
 ## Example Usage
 
+The action uses Node.js 24. Self-hosted runners must support the `node24` action runtime (runner v2.327.1 or later).
+The token needs `contents: read` permission to list repository tags.
+
 ```yml
 - name: Determine next version
-  uses: gps/determine_next_version@master
+  uses: gps/determine-next-version@master
   id: next_version
   with:
     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -42,3 +45,17 @@ Next build version to use.
     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     TAG_NAME: v${{steps.next_version.outputs.NEXT_BUILD_VERSION}}
 ```
+
+## Development
+
+Use asdf to install the Node.js version pinned in `.tool-versions`. CI reads the same file:
+
+```sh
+asdf install
+npm ci
+npm audit
+npm run build
+```
+
+The pull request workflow uses `gps/ncc-gha@master` to build and commit generated `dist/` changes back to the branch. The action runs this bundled distribution without installing dependencies.
+CI also audits dependencies. Dependabot checks npm packages and workflow actions weekly.
