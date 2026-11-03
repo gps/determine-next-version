@@ -1,5 +1,5 @@
-const core = require("@actions/core");
-const github = require("@actions/github");
+import * as core from "@actions/core";
+import * as github from "@actions/github";
 const env = process.env;
 
 function setBuildVersion(buildVersion) {
@@ -10,7 +10,7 @@ async function listAllTags(octokit, owner, repo) {
   var page = 1;
   var tags = [];
   while (true) {
-    const response = await octokit.repos.listTags({
+    const response = await octokit.rest.repos.listTags({
       owner,
       repo,
       per_page: 100,
@@ -28,16 +28,17 @@ async function listAllTags(octokit, owner, repo) {
 }
 
 async function run() {
-  const token = core.getInput("GH_TOKEN");
+  const token = core.getInput("GH_TOKEN", { required: true });
   var tagPrefix = core.getInput("TAG_PREFIX");
   if (!tagPrefix) {
     tagPrefix = "v";
   }
-  const octokit = new github.GitHub(token);
+  const octokit = github.getOctokit(token);
   const owner = env.GITHUB_REPOSITORY.split("/")[0];
   const repo = env.GITHUB_REPOSITORY.split("/")[1];
 
-  const versionTagRegex = new RegExp(`^${tagPrefix}(\\d+)\\.(\\d+)\\.(\\d+)$`);
+  const escapedPrefix = tagPrefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const versionTagRegex = new RegExp(`^${escapedPrefix}(\\d+)\\.(\\d+)\\.(\\d+)$`);
 
   const allTags = await listAllTags(octokit, owner, repo);
   const tags = allTags.filter((el) => el.match(versionTagRegex));
@@ -48,24 +49,24 @@ async function run() {
   }
 
   tags.sort((l, r) => {
-    const lx = parseInt(l.split(".")[0]);
-    const rx = parseInt(r.split(".")[0]);
+    const lx = parseInt(l.substring(tagPrefix.length).split(".")[0]);
+    const rx = parseInt(r.substring(tagPrefix.length).split(".")[0]);
     if (lx < rx) {
       return 1;
     }
     if (rx < lx) {
       return -1;
     }
-    const ly = parseInt(l.split(".")[1]);
-    const ry = parseInt(r.split(".")[1]);
+    const ly = parseInt(l.substring(tagPrefix.length).split(".")[1]);
+    const ry = parseInt(r.substring(tagPrefix.length).split(".")[1]);
     if (ly < ry) {
       return 1;
     }
     if (ry < ly) {
       return -1;
     }
-    const lz = parseInt(l.split(".")[2]);
-    const rz = parseInt(r.split(".")[2]);
+    const lz = parseInt(l.substring(tagPrefix.length).split(".")[2]);
+    const rz = parseInt(r.substring(tagPrefix.length).split(".")[2]);
     if (lz < rz) {
       return 1;
     }
@@ -82,4 +83,4 @@ async function run() {
   setBuildVersion(`${nextX}.${nextY}.${nextZ}`);
 }
 
-run();
+run().catch((error) => core.setFailed(error.message));

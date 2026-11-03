@@ -1,11 +1,24 @@
-name: Build Package to use ncc
-on: [pull_request]
+name: Build
+on: [push, pull_request, workflow_dispatch]
+
+permissions:
+  contents: read
+
 jobs:
   build-package:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Build node js module
-        uses: gps/ncc-gha@master
+      - uses: actions/checkout@v7.0.1
         with:
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: false
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version-file: .tool-versions
+          cache: npm
+      - run: npm ci
+      - run: npm audit
+      - run: npm run build
+      - name: Check Distribution Is Current
+        run: |
+          git diff --exit-code -- dist
+          test -z "$(git ls-files --others --exclude-standard dist)"

@@ -3,7 +3,13 @@
   "version": "1.0.0",
   "description": "A GitHub Action that parses git tags that start with v and determines the next version",
   "main": "index.js",
-  "scripts": {},
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "ncc build index.js --out dist --target es2024 --minify --license licenses.txt --no-cache"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gps/determine-next-version.git"
@@ -15,7 +21,10 @@
   },
   "homepage": "https://github.com/gps/determine-next-version#readme",
   "dependencies": {
-    "@actions/core": "^1.2.6",
-    "@actions/github": "^2.2.0"
+    "@actions/core": "^3.0.1",
+    "@actions/github": "^9.1.1"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.45.0"
   }
 }
