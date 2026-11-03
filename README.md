@@ -57,5 +57,5 @@ npm audit
 npm run build
 ```
 
-Commit the generated `dist/` files with source and dependency changes. The action runs this bundled distribution without installing dependencies.
-CI checks the audit, build, and distribution freshness. Dependabot checks npm packages and workflow actions weekly.
+The pull request workflow uses `gps/ncc-gha@master` to build and commit generated `dist/` changes back to the branch. The action runs this bundled distribution without installing dependencies.
+CI also audits dependencies. Dependabot checks npm packages and workflow actions weekly.
